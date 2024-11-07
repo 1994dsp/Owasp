@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ZAP_PORT = '8080'
+        ZAP_PORT = '8081'
         TARGET_URL = 'http://juice-shop:3000'
     }
 
