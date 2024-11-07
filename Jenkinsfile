@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         ZAP_PORT = '8081'
-        TARGET_URL = 'http://juice-shop:3000'
+        TARGET_URL = 'http://juice-shop:3001'
     }
 
     stages {
@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     // Run Juice Shop container
-                    docker.image('bkimminich/juice-shop').withRun('-p 3000:3000') { c ->
+                    docker.image('bkimminich/juice-shop').withRun('-p 3001:3000') { c ->
                         echo "Juice Shop is running at $TARGET_URL"
                     }
                 }
