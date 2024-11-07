@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Run ZAP container
-                    docker.image('owasp/zap2docker-stable').withRun("-u zap -p ${ZAP_PORT}:${ZAP_PORT} zap.sh -daemon -host 0.0.0.0 -port ${ZAP_PORT}") { zap ->
+                    docker.image('owasp/zap2docker-stable').withRun("-u zap -p ${ZAP_PORT}:${ZAP_PORT} owasp/zap2docker-stable -daemon -host 0.0.0.0 -port ${ZAP_PORT}") { zap ->
                         env.ZAP_CONTAINER_ID = zap.id
                         echo "ZAP is running on port ${ZAP_PORT}"
                     }
