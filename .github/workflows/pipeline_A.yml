@@ -1,0 +1,81 @@
+name: "Baseline Security Pipeline"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+env:
+  NODE_DEFAULT_VERSION: 20
+  ANGULAR_CLI_VERSION: 17
+  CYCLONEDX_NPM_VERSION: '^1.12.0'   
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out Git repository"
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
+      - name: "Use Node.js 18"
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d #v3.8.1
+        with:
+          node-version: ${{ env.NODE_DEFAULT_VERSION }}
+      - name: "Install CLI tools"
+        run: npm install -g @angular/cli@$ANGULAR_CLI_VERSION
+      - name: "Install application minimalistically"
+        run: |
+          npm install --ignore-scripts
+          cd frontend
+          npm install --ignore-scripts --legacy-peer-deps
+      - name: "Lint source code"
+        run: npm run lint
+      - name: "Lint customization configs"
+        run: >
+          npm run lint:config -- -f ./config/7ms.yml &&
+          npm run lint:config -- -f ./config/addo.yml &&
+          npm run lint:config -- -f ./config/bodgeit.yml &&
+          npm run lint:config -- -f ./config/ctf.yml &&
+          npm run lint:config -- -f ./config/default.yml &&
+          npm run lint:config -- -f ./config/fbctf.yml &&
+          npm run lint:config -- -f ./config/juicebox.yml &&
+          npm run lint:config -- -f ./config/mozilla.yml &&
+          npm run lint:config -- -f ./config/oss.yml &&
+          npm run lint:config -- -f ./config/quiet.yml &&
+          npm run lint:config -- -f ./config/tutorial.yml &&
+          npm run lint:config -- -f ./config/unsafe.yml
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit
+        run: npm audit --production
