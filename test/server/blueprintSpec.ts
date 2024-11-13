@@ -44,11 +44,11 @@ describe('blueprint', () => {
             pathToImage = path.resolve('frontend/src', pathToImage, product.image)
           }
           console.log(`Testing EXIF data for image at path: ${pathToImage}`)
-          if (!product.exifForBlueprintChallenge?.[0]) {   // Prevents failing test for sample or custom themes where null has been explicitly set as value for "exifForBlueprintChallenge". Warning: This makes the "Retrieve Blueprint" challenge probably unsolvable unless hints are placed elsewhere.
+          if (!product.exifForBlueprintChallenge?.[0]) {// Prevents failing test for sample or custom themes where null has been explicitly set as value for "exifForBlueprintChallenge". Warning: This makes the "Retrieve Blueprint" challenge probably unsolvable unless hints are placed elsewhere.
             console.warn(`Skipping EXIF test for ${pathToImage} as no EXIF properties are defined.`)
-            continue  // Skip if no EXIF properties are required
+            continue// Skip if no EXIF properties are required
           } 
-            try {
+          try {
               const exifData = await parseExifData(pathToImage)
               const properties = Object.values(exifData.image)
               for (const property of product.exifForBlueprintChallenge) {
