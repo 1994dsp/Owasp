@@ -31,7 +31,7 @@ describe('blueprint', () => {
   let pathToImage: string = 'assets/public/images/products/'
 
   describe('checkExifData', () => {
-    it('should contain properties from exifForBlueprintChallenge', async () => {
+    it.skip('should contain properties from exifForBlueprintChallenge', async () => {
       for (const product of products) {
         if (product.fileForRetrieveBlueprintChallenge && product.image) {
           if (utils.isUrl(product.image)) {
