@@ -85,24 +85,23 @@ jobs:
             frontend-lcov.info
             server-lcov.info
 
- security-scan:
-  runs-on: ubuntu-latest
-  needs: test
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
-    - name: Generate lock file
-      run: npm install --package-lock-only
+      - name: Generate lock file
+        run: npm install --package-lock-only
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run npm audit
-      run: npm audit --omit=dev
-
+      - name: Run npm audit
+        run: npm audit --omit=dev
