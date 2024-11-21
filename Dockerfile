@@ -31,7 +31,7 @@ RUN rm -rf node_modules/libxmljs/build && \
 FROM gcr.io/distroless/nodejs20-debian11
 ARG BUILD_DATE
 ARG VCS_REF
-LABEL maintainer="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
+LABEL maintainer="dsp <bjoern.kimminich@owasp.org>" \
     org.opencontainers.image.title="OWASP Juice Shop" \
     org.opencontainers.image.description="Probably the most modern and sophisticated insecure web application" \
     org.opencontainers.image.authors="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
