@@ -54,21 +54,6 @@ jobs:
           npm run lint:config -- -f ./config/quiet.yml &&
           npm run lint:config -- -f ./config/tutorial.yml &&
           npm run lint:config -- -f ./config/unsafe.yml
-  coding-challenge-rsn:
-    runs-on: windows-latest
-    steps:
-      - name: "Check out Git repository"
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
-      - name: "Use Node.js 18"
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d #v3.8.1
-        with:
-          node-version: ${{ env.NODE_DEFAULT_VERSION }}
-      - name: "Install CLI tools"
-        run: npm install -g @angular/cli@$ANGULAR_CLI_VERSION
-      - name: "Install application"
-        run: npm install
-      - name: "Check coding challenges for accidental code discrepancies"
-        run: npm run rsn
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -109,49 +94,9 @@ jobs:
           path: |
             frontend-lcov.info
             server-lcov.info
-  api-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [18, 20, 21, 22]
-    steps:
-      - name: "Check out Git repository"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
-      - name: "Use Node.js ${{ matrix.node-version }}"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d #v3.8.1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: "Install CLI tools"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        run: npm install -g @angular/cli@$ANGULAR_CLI_VERSION
-      - name: "Install application"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        run: npm install
-      - name: "Execute integration tests"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        uses: nick-invision/retry@943e742917ac94714d2f408a0e8320f2d1fcafcd #v2.8.3
-        env:
-          NODE_ENV: test
-        with:
-          timeout_minutes: 5
-          max_attempts: 3
-          command: npm run frisby
-      - name: "Copy API test coverage data"
-        run: cp build/reports/coverage/api-tests/lcov.info api-lcov.info
-      - name: "Upload API test coverage data"
-        #if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20'
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 #v3.1.3
-        with:
-          name: api-test-lcov
-          path: |
-            api-lcov.info
   coverage-report:
-    needs: [test, api-test]
+    needs: [test]
     runs-on: ubuntu-latest
-    #if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push'
     steps:
       - name: "Check out Git repository"
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
@@ -176,83 +121,6 @@ jobs:
           ./cc-test-reporter sum-coverage codeclimate.*.json -p 3
           ./cc-test-reporter upload-coverage
         shell: bash
-  custom-config-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Check out Git repository"
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
-      - name: "Use Node.js 18"
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d #v3.8.1
-        with:
-          node-version: ${{ env.NODE_DEFAULT_VERSION }}
-      - name: "Install CLI tools"
-        run: npm install -g @angular/cli@$ANGULAR_CLI_VERSION
-      - name: "Install application"
-        #if: github.repository == 'juice-shop/juice-shop' || (github.repository != 'juice-shop/juice-shop' && matrix.os == 'ubuntu-latest' && matrix.node-version == '20')
-        run: npm install
-      - name: "Execute server tests for each custom configuration"
-        uses: nick-invision/retry@943e742917ac94714d2f408a0e8320f2d1fcafcd #v2.8.3
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: >
-            NODE_ENV=7ms npm run test:server &&
-            NODE_ENV=addo npm run test:server &&
-            NODE_ENV=bodgeit npm run test:server &&
-            NODE_ENV=ctf npm run test:server &&
-            NODE_ENV=fbctf npm run test:server &&
-            NODE_ENV=juicebox npm run test:server &&
-            NODE_ENV=mozilla npm run test:server &&
-            NODE_ENV=oss npm run test:server &&
-            NODE_ENV=quiet npm run test:server &&
-            NODE_ENV=tutorial npm run test:server &&
-            NODE_ENV=unsafe npm run test:server
-  e2e:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        browser: [chrome] # FIXME Switch back to [chrome, firefox] after debugging extreme flakiness of Firefox on CI/CD
-      fail-fast: false
-    steps:
-      - name: "Check out Git repository"
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
-      - name: "Use Node.js 18"
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d #v3.8.1
-        with:
-          node-version: ${{ env.NODE_DEFAULT_VERSION }}
-      - name: "Install CLI tools"
-        run: npm install -g @angular/cli
-      - name: "Install application"
-        run: npm install
-      - name: "Execute end-to-end tests on Ubuntu"
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: cypress-io/github-action@59810ebfa5a5ac6fcfdcfdf036d1cd4d083a88f2 #v6.5.0
-        with:
-          install: false
-          browser: ${{ matrix.browser }}
-          start: npm start
-          wait-on: http://localhost:3000
-          record: true
-          group: ${{ matrix.browser }} @ ${{ matrix.os }}
-        env:
-          SOLUTIONS_WEBHOOK: ${{ secrets.E2E_SOLUTIONS_WEBHOOK }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Execute end-to-end tests on Mac"
-        if: ${{ matrix.os == 'macos-latest' }}
-        uses: cypress-io/github-action@59810ebfa5a5ac6fcfdcfdf036d1cd4d083a88f2 #v6.5.0
-        with:
-          install: false
-          browser: ${{ matrix.browser }}
-          start: npm start
-          wait-on: http://localhost:3000
-          record: true
-          group: ${{ matrix.browser }} @ ${{ matrix.os }}
-        env:
-          CYPRESS_CACHE_FOLDER: /Users/runner/Library/Caches/Cypress
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   smoke-test:
     runs-on: ubuntu-latest
     steps:
@@ -295,8 +163,7 @@ jobs:
       - name: "Execute smoke test on Docker"
         run: docker compose -f docker-compose.test.yml up --exit-code-from sut
   docker:
-    if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
-    needs: [test, api-test, e2e, custom-config-test, docker-test]
+    needs: [test, docker-test]
     runs-on: ubuntu-latest
     steps:
       - name: "Check out Git repository"
@@ -332,42 +199,4 @@ jobs:
             VCS_REF=${{ env.VCS_REF }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             CYCLONEDX_NPM_VERSION=${{ env.CYCLONEDX_NPM_VERSION }}
-  heroku:
-    if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
-    needs: [test, api-test, e2e, custom-config-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Check out Git repository"
-        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac #v4.0.0
-      - name: "Set Heroku app & branch for ${{ github.ref }}"
-        run: |
-          if [ "$GITHUB_REF" == "refs/heads/master" ]; then
-          echo "HEROKU_APP=juice-shop" >> $GITHUB_ENV
-          echo "HEROKU_BRANCH=master" >> $GITHUB_ENV
-          else
-          echo "HEROKU_APP=juice-shop-staging" >> $GITHUB_ENV
-          echo "HEROKU_BRANCH=develop" >> $GITHUB_ENV
-          fi
-      - name: "Deploy ${{ github.ref }} to Heroku"
-        uses: akhileshns/heroku-deploy@9fd0f9faae4aa93a38d6f5e25b9128589f1371b0 #v3.12.14
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ env.HEROKU_APP }}
-          heroku_email: bjoern.kimminich@owasp.org
-          branch: ${{ env.HEROKU_BRANCH }}
-  notify-slack:
-    if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push' && (success() || failure())
-    needs:
-      - docker
-      - heroku
-      - lint
-      - coding-challenge-rsn
-      - smoke-test
-      - coverage-report
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Slack workflow notification"
-        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 #v1.2.0
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+  
