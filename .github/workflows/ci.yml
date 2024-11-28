@@ -195,13 +195,13 @@ jobs:
     steps:
       - name: "Pull Docker Image from Docker Hub"
         run: |
-          docker pull dsp1994/owasp:${{ env.DOCKER_TAG }}
+          docker pull dsp1994/owasp:snapshot
       - name: "Run Docker Container"
         run: |
-          docker run -d --name zap-scan-container -p 3000:3000 dsp1994/owasp:${{ env.DOCKER_TAG }}
+          docker run -d --name zap-scan-container -p 3000:3000 dsp1994/owasp:snapshot
       - name: "Run ZAP Scan"
         run: |
-          docker run -v $(pwd):/zap/wrk/:rw --network="host" owasp/zap2docker-stable zap-baseline.py \
+          docker run -v $(pwd):/zap/wrk/:rw --network="host" zaproxy/zap-stable:latest zap-baseline.py \
             -t http://localhost:3000 \
             -r zap-report.html
       - name: "Upload ZAP Report"

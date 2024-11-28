@@ -98,12 +98,13 @@ jobs:
           node-version: '18'
       - name: "Install Angular CLI"
         run: npm install -g @angular/cli@17
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
 
       - name: Generate lock file
         run: npm install --package-lock-only
 
-      - name: Install dependencies
-        run: npm install
+     
 
       - name: Run npm audit
         run: npm audit --omit=dev
