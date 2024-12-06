@@ -200,10 +200,13 @@ jobs:
       - name: "Run Juice Shop Application"
         run: |
           docker run -d --name juice-shop-container -p 3000:3000 dsp1994/owasp:snapshot
+      - name: "Set Permissions for Output Directory"
+        run: |
+          mkdir -p zap_output
+          chmod -R 777 zap_output
 
       - name: "Run ZAP Scan"
         run: |
-          mkdir -p zap_output
           docker run \
           -v $(pwd)/zap_output:/zap/wrk:rw \
           --network="host" \
