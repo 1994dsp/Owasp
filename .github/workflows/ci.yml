@@ -193,28 +193,37 @@ jobs:
     runs-on: ubuntu-latest
     name: Scan Juice Shop 
     steps:
-      - name: "Pull Docker Image from Docker Hub"
+      - name: "Pull Docker Image for Juice Shop"
         run: |
-          docker pull dsp1994/owasp:snapshot
-      - name: "Run Docker Container"
-        run: |
-          docker run -d --name zap-scan-container -p 3000:3000 dsp1994/owasp:snapshot
-      - name: "Run ZAP Scan"
-        run: |
-          mkdir -p zap_output
-          docker run -v $(pwd)/zap_output:/zap/output/:rw --network="host" zaproxy/zap-stable:latest zap-full-scan.py \
-            -t http://localhost:3000 \
-            -r zap-output/zap-report.html
-            ls zap_output
-      - name: "Upload ZAP Report"
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-scan-report
-          path: zap-report.html
-      - name: "Clean up Docker Container"
-        run: |
-          docker stop zap-scan-container
-          docker rm zap-scan-container
+        docker pull dsp1994/owasp:snapshot
+
+     - name: "Run Juice Shop Application"
+       run: |
+        docker run -d --name juice-shop-container -p 3000:3000 dsp1994/owasp:snapshot
+
+     - name: "Run ZAP Scan"
+       run: |
+        mkdir -p zap_output
+        docker run \
+          -v $(pwd)/zap_output:/zap/wrk:rw \
+          --network="host" \
+          zaproxy/zap-stable:latest \
+          zap-full-scan.py \
+          -t http://localhost:3000 \
+          -r /zap/wrk/zap-report.html
+        ls zap_output
+
+     - name: "Upload ZAP Report"
+       uses: actions/upload-artifact@v3
+       with:
+         name: zap-scan-report
+         path: zap_output/zap-report.html
+
+     - name: "Clean Up Docker Containers"
+       run: |
+        docker stop juice-shop-container
+        docker rm juice-shop-container
+
      
 
   
