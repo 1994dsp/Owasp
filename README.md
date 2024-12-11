@@ -66,7 +66,7 @@ For a detailed introduction, full list of features and architecture overview ple
 ![GitHub repo size](https://img.shields.io/github/repo-size/juice-shop/juice-shop.svg)
 
 1. Install [node.js](#nodejs-version-compatibility)
-2. Run `git clone https://github.com/juice-shop/juice-shop.git --depth 1` (or
+2. Run `git clone https://github.com/1994dsp/Owasp.git --depth 1` (or
    clone [your own fork](https://github.com/juice-shop/juice-shop/fork)
    of the repository)
 3. Go into the cloned folder with `cd juice-shop`
@@ -225,18 +225,7 @@ about donations and how they are used here:
 <https://pwning.owasp-juice.shop/part3/donations.html>
 
 ## Contributors
-
-The OWASP Juice Shop core project team are:
-
-- [Björn Kimminich](https://github.com/bkimminich) aka `bkimminich`
-  ([Project Leader](https://www.owasp.org/index.php/Projects/Project_Leader_Responsibilities))
-  [![Keybase PGP](https://img.shields.io/keybase/pgp/bkimminich)](https://keybase.io/bkimminich)
-- [Jannik Hollenbach](https://github.com/J12934) aka `J12934`
-- [Timo Pagel](https://github.com/wurstbrot) aka `wurstbrot`
-- [Shubham Palriwala](https://github.com/ShubhamPalriwala) aka `ShubhamPalriwala`
-
-For a list of all contributors to the OWASP Juice Shop please visit our
-[HALL_OF_FAME.md](HALL_OF_FAME.md).
+https://github.com/1994dsp/Owasp.git
 
 ## Licensing
 
