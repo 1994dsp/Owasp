@@ -10,6 +10,6 @@ jobs:
         uses: zaproxy/action-baseline@41aee98ebc7cf2802c3beae4e7d4336413a21e43
         with:
           token: '${{ secrets.GITHUB_TOKEN }}'
-          target: 'https://preview.owasp-juice.shop' # target url
+          target: 'https://preview.owasp-juice.shop' # target url of juiceshop
           rules_file_name: .zap/rules.tsv
           cmd_options: '-a -j'
